@@ -1,0 +1,29 @@
+name: Upload Artifact to S3
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::YOUR_AWS_ACCOUNT_ID:role/YOUR_IAM_ROLE_NAME
+          role-session-name: GitHubActions
+          aws-region: YOUR_AWS_REGION
+
+      - name: Upload artifact to S3
+        run: |
+          aws s3 cp path/to/artifact.zip s3://your-bucket-name/artifact.zip
