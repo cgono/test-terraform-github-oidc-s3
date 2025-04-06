@@ -1,0 +1,89 @@
+name: 'Terraform'
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+    inputs:
+      region:
+        description: 'AWS region to deploy to'
+        required: true
+        type: string
+        default: 'ap-southeast-1'
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  terraform:
+    name: 'Terraform'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: arn:aws:iam::${{ vars.AWS_ACCOUNT_ID }}:role/github-actions-role
+        aws-region: ${{ inputs.region || 'ap-southeast-1' }}
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: "1.5.0"
+
+    - name: Create Lambda ZIP
+      run: |
+        zip lambda_function.zip lambda_function.js
+
+    - name: Terraform Format
+      id: fmt
+      run: terraform fmt -check
+      continue-on-error: true
+
+    # First, initialize and apply the backend configuration
+    - name: Terraform Backend Init
+      id: backend_init
+      run: |
+        terraform init -backend=false
+        terraform apply -target=aws_s3_bucket.terraform_state -target=aws_dynamodb_table.terraform_locks -auto-approve
+
+    # Then initialize with the backend
+    - name: Terraform Init
+      id: init
+      run: terraform init -reconfigure
+      env:
+        TF_VAR_webhook_url: ${{ secrets.WEBHOOK_URL }}
+        TF_VAR_aws_region: ${{ inputs.region || 'ap-southeast-1' }}
+
+    - name: Terraform Validate
+      id: validate
+      run: terraform validate
+
+    - name: Terraform Plan
+      id: plan
+      if: github.event_name == 'pull_request'
+      run: terraform plan -no-color
+      env:
+        TF_VAR_webhook_url: ${{ secrets.WEBHOOK_URL }}
+        TF_VAR_aws_region: ${{ inputs.region || 'ap-southeast-1' }}
+      continue-on-error: true
+
+    - name: Terraform Plan Status
+      if: steps.plan.outcome == 'failure'
+      run: exit 1
+
+    - name: Terraform Apply
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: terraform apply -auto-approve
+      env:
+        TF_VAR_webhook_url: ${{ secrets.WEBHOOK_URL }}
+        TF_VAR_aws_region: ${{ inputs.region || 'ap-southeast-1' }} 
