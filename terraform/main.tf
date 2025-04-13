@@ -1,6 +1,6 @@
 module "s3" {
-  source      = "./modules/s3"
-  bucket_name = "dirty-binaries"
+  source         = "./modules/s3"
+  s3_bucket_name = var.s3_bucket_name
 }
 
 module "iam" {
@@ -9,5 +9,6 @@ module "iam" {
 }
 
 module "guardduty" {
-  source = "./modules/guardduty"
+  source      = "./modules/guardduty"
+  webhook_url = var.webhook_url
 }

@@ -1,3 +1,5 @@
+data "aws_caller_identity" "current" {}
+
 resource "aws_iam_role" "github_oidc_role" {
   name = "GitHubOIDCRole"
 

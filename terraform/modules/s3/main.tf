@@ -1,5 +1,7 @@
+data "aws_caller_identity" "current" {}
+
 resource "aws_s3_bucket" "artifact_bucket" {
-  bucket = var.bucket_name
+  bucket = var.s3_bucket_name
 }
 
 resource "aws_s3_bucket_public_access_block" "block" {
