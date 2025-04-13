@@ -1,8 +1,8 @@
 resource "aws_s3_bucket" "terraform_state" {
-  bucket = "your-terraform-state-bucket"
+  bucket = "test-gh-oidc-s3-terraform-state-bucket"
 
   versioning {
-    enabled = true  # Enables versioning to prevent data loss
+    enabled = true # Enables versioning to prevent data loss
   }
 
   server_side_encryption_configuration {
@@ -24,9 +24,9 @@ resource "aws_s3_bucket_public_access_block" "terraform_state_block" {
 }
 
 resource "aws_dynamodb_table" "terraform_locks" {
-  name           = "terraform-state-lock"
-  billing_mode   = "PAY_PER_REQUEST"
-  hash_key       = "LockID"
+  name         = "terraform-state-lock"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "LockID"
 
   attribute {
     name = "LockID"
