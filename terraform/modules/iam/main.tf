@@ -8,11 +8,11 @@ resource "aws_iam_role" "github_oidc_role" {
     Statement = [
       {
         Effect    = "Allow",
-        Principal = { Federated = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/token.actions.githubusercontent.com" },
+        Principal = { Federated = var.oidc_provider_arn },
         Action    = "sts:AssumeRoleWithWebIdentity",
         Condition = {
           StringEquals = { "token.actions.githubusercontent.com:aud" : "sts.amazonaws.com" },
-          StringLike   = { "token.actions.githubusercontent.com:sub" : "repo:ORG_NAME/REPO_NAME:*" }
+          StringLike   = { "token.actions.githubusercontent.com:sub" : "repo:${ var.github_repo }:*" }
         }
       }
     ]

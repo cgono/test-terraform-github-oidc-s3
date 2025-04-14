@@ -16,6 +16,11 @@ permissions:
 jobs:
   terraform:
     runs-on: ubuntu-latest
+    env:
+      TF_VAR_aws_region: ap-southeast-1
+      TF_VAR_github_repo: $GITHUB_REPOSITORY
+      TF_VAR_s3_bucket_name: dirty-binaries
+      TF_VAR_webhook_url: "https://your-webhook-endpoint.com"
     defaults:
       run:
         working-directory: ./

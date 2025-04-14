@@ -12,3 +12,8 @@ variable "s3_bucket_name" {
   type        = string
   description = "S3 dirty bucket name"
 }
+
+variable "github_repo" {
+  type        = string
+  description = "GitHub org and repo name"
+}
