@@ -6,8 +6,12 @@ module "s3" {
 module "iam" {
   source            = "./modules/iam"
   bucket_arn        = module.s3.bucket_arn
-  oidc_provider_arn = module.iam.oidc_provider_arn
+  oidc_provider_arn = module.oidc.oidc_provider_arn
   github_repo       = var.github_repo
+}
+
+module "oidc" {
+  source = "./modules/oidc"
 }
 
 module "guardduty" {
