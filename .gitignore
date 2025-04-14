@@ -38,3 +38,7 @@ terraform.rc
 
 # MacOS
 .DS_Store
+
+# Handler files
+lambda_handler/site_packages/
+terraform/lambda.zip

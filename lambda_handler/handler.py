@@ -1,5 +1,10 @@
+# Add the 'site_packages' folder to Python's module search path
 import json
 import os
+import sys
+
+sys.path.append(os.path.join(os.path.dirname(__file__), "site_packages"))
+
 import requests
 
 WEBHOOK_URL = os.environ["WEBHOOK_URL"]
