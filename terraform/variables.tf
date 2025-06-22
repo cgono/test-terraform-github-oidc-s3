@@ -17,3 +17,8 @@ variable "github_repo" {
   type        = string
   description = "GitHub org and repo name"
 }
+
+variable "oidc_provider_arn" {
+  description = "ARN of the GitHub OIDC provider"
+  type        = string
+}

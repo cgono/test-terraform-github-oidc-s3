@@ -4,10 +4,11 @@ module "s3" {
 }
 
 module "iam" {
-  source            = "./modules/iam"
-  bucket_arn        = module.s3.bucket_arn
-  oidc_provider_arn = module.oidc.oidc_provider_arn
-  github_repo       = var.github_repo
+  source                = "./modules/iam"
+  bucket_arn            = module.s3.bucket_arn
+  oidc_provider_arn     = module.oidc.oidc_provider_arn
+  github_repo           = var.github_repo
+  github_oidc_role_name = aws_iam_role.github_oidc_role.name
 }
 
 module "oidc" {
