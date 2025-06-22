@@ -43,7 +43,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: arn:aws:iam::345594603974:role/TerraformCICDPolicy
+          role-to-assume: arn:aws:iam::345594603974:role/TerraformCICDRole
           role-session-name: GitHubActions
           aws-region: ap-southeast-1
 
