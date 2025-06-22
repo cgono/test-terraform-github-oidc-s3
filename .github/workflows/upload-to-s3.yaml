@@ -27,3 +27,28 @@ jobs:
       - name: Upload artifact to S3
         run: |
           aws s3 cp path/to/artifact.zip s3://your-bucket-name/artifact.zip
+
+      - name: Get GuardDuty Detector ID
+        id: detector
+        run: |
+          DETECTOR_ID=$(aws guardduty list-detectors --query 'DetectorIds[0]' --output text)
+          echo "detector_id=$DETECTOR_ID" >> $GITHUB_OUTPUT
+
+      - name: Poll for GuardDuty findings
+        env:
+          DETECTOR_ID: ${{ steps.detector.outputs.detector_id }}
+        run: |
+          for i in {1..10}; do
+            FINDINGS=$(aws guardduty list-findings \
+              --detector-id "$DETECTOR_ID" \
+              --finding-criteria '{"Criterion":{"resource.s3Bucket.name":{"Eq":["your-bucket-name"]}}}' \
+              --query 'FindingIds' --output text)
+            if [ "$FINDINGS" != "" ]; then
+              echo "GuardDuty finding detected: $FINDINGS"
+              exit 0
+            fi
+            echo "No findings yet, waiting..."
+            sleep 30
+          done
+          echo "Timeout waiting for GuardDuty finding"
+          exit 1

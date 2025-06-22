@@ -21,6 +21,7 @@ jobs:
       TF_VAR_github_repo: $GITHUB_REPOSITORY
       TF_VAR_s3_bucket_name: dirty-binaries
       TF_VAR_webhook_url: "https://your-webhook-endpoint.com"
+      TF_VAR_oidc_provider_arn: "arn:aws:iam::345594603974:oidc-provider/token.actions.githubusercontent.com"
     defaults:
       run:
         working-directory: ./
